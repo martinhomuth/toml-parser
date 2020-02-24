@@ -4,5 +4,6 @@
 
 void TestCuTestmeFunction(CuTest *tc)
 {
-	CuAssertTrue(testme() == 3);
+	CuAssertTrue(tc, testme() == 3);
+	CuAssertTrue(tc, testme() != 3);
 }

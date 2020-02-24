@@ -31,10 +31,11 @@ include_directories(${PROJECT_BINARY_DIR})
 
 set(src_files
   src/main.c
+  src/test.c
   )
 
 set(header_files
-  # something
+  src/test.h
   )
 
 ## Build test suite with CuTest
@@ -49,6 +50,7 @@ else()
     test/CuTest.c
     test/CuTest.h
     ${PROJECT_BINARY_DIR}/AllTests.c
+    test/testmain.c
     )
 
   if(DEFINED TEST)
@@ -63,7 +65,7 @@ else()
     # Process source files to look for tests to run
     add_custom_command(
       OUTPUT ${PROJECT_BINARY_DIR}/AllTests.c
-      COMMAND bash ${PROJECT_SOURCE_DIR}/test/make-tests.sh ${PROJECT_SOURCE_DIR}/src/*.c > ${PROJECT_BINARY_DIR}
+      COMMAND bash ${PROJECT_SOURCE_DIR}/test/make-tests.sh ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/test/*.c > ${PROJECT_BINARY_DIR}/AllTests.c
       )
 
     enable_testing()
