@@ -21,6 +21,29 @@ set(TEST true)
 
 ## Project configuration
 
+# Link this 'library' to set the c++ standard / compile-time options requested
+add_library(project_options INTERFACE)
+target_compile_features(project_options INTERFACE cxx_std_17)
+
+# Link this 'library' to use the warnings specified in CompilerWarnings.cmake
+add_library(project_warnings INTERFACE)
+
+# standard compiler warnings
+include(cmake/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
+
+include(cmake/StaticAnalyzers.cmake)
+include(cmake/Sanitizers.cmake)
+enable_sanitizers(project_options)
+
+if (ENABLE_TESTING)
+  enable_testing()
+  message("Building tests.")
+  add_subdirectory(test)
+endif()
+
+add_subdirectory(src)
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/test)
 include_directories(${PROJECT_BINARY_DIR})
@@ -38,44 +61,3 @@ set(header_files
   src/test.h
   )
 
-## Build test suite with CuTest
-
-# from http://stackoverflow.com/questions/25199677/how-to-detect-if-current-scope-has-a-parent-in-cmake
-get_directory_property(hasParent PARENT_DIRECTORY)
-
-if(hasParent)
-  # don't create "run_tests" when we're a sub-project of something else
-else()
-  set(test_files
-    test/CuTest.c
-    test/CuTest.h
-    ${PROJECT_BINARY_DIR}/AllTests.c
-    test/testmain.c
-    )
-
-  if(DEFINED TEST)
-    add_definitions(-DTEST)
-
-    add_executable(run_tests
-      ${test_files}
-      ${src_files}
-      ${header_files}
-      )
-
-    # Process source files to look for tests to run
-    add_custom_command(
-      OUTPUT ${PROJECT_BINARY_DIR}/AllTests.c
-      COMMAND bash ${PROJECT_SOURCE_DIR}/test/make-tests.sh ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/test/*.c > ${PROJECT_BINARY_DIR}/AllTests.c
-      )
-
-    enable_testing()
-
-    add_test(test ${PROJECT_BINARY_DIR}/run_tests)
-
-    find_program(MEMORYCHECK_COMMAND valgrind)
-    set(MEMORYCHECK_COMMAND_OPTIONS --leak-check=full --error-exitcode=1)
-
-    add_test(memory_test ${MEMORYCHECK_COMMAND} ${MEMORYCHECK_COMMAND_OPTIONS} ${PROJECT_BINARY_DIR}/run_tests)
-  endif()
-
-endif()
