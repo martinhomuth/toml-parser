@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #ifndef TEST
-int main(int argc, char *argv[])
+int main()
 {
 	printf("Hello World\n");
 	return EXIT_SUCCESS;
