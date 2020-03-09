@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 3.15)
 
 ## Project definition
-
 set(project_title "toml-parser")
 set(project_description "Tom's Obvious, Minimal Language Parser")
 set(project_author "Martin Homuth")
@@ -18,18 +17,20 @@ project(${project_title}
   VERSION ${project_version}
   DESCRIPTION ${project_description}
   HOMEPAGE_URL ${project_url}
-  LANGUAGES C
+  LANGUAGES CXX
   )
 
-set(TEST true)
-
 ## Submodules
+include(FetchContent)
+
+## External Projects
+add_subdirectory(external/Catch2)
 
 ## Project configuration
 
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
-target_compile_features(project_options INTERFACE c_std_11)
+target_compile_features(project_options INTERFACE cxx_std_17)
 
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)
